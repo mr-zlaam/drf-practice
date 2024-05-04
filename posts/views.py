@@ -99,13 +99,50 @@ class Retrieve_Update_Delete_View(APIView):
         except Exception as e:
             raise APIException("Internal server error occurred!") from e
 
-
-@api_view(http_method_names=["GET"])
-def get_single_post(request: Request, post_id: int):
-    post = get_object_or_404(Post, pk=post_id)
-    serializer = PostSerializer(instance=post)
-    res = {"message": "singlePost", "data": serializer.data}
-    return Response(data=res, status=status.HTTP_200_OK)
+    # Update Post
+    def patch(self, request: Request, post_id: int):
+        try:
+            query_post_to_update = get_object_or_404(Post, pk=post_id)
+            data_from_client_to_update = request.data
+            if (
+                data_from_client_to_update.get("title")
+                and data_from_client_to_update.get("content") is not None
+            ):
+                serialize_the_data = self.serializer_class(
+                    instance=query_post_to_update, data=data_from_client_to_update
+                )
+                if serialize_the_data.is_valid():
+                    serialize_the_data.save()
+                    response_after_serialization = {
+                        "message": "Post updated successfully",
+                        "success": True,
+                        "status": status.HTTP_200_OK,
+                        "data": serialize_the_data.data,
+                    }
+                    return Response(
+                        data=response_after_serialization,
+                        status=status.HTTP_201_CREATED,
+                    )
+                else:
+                    error_from_serializer = {
+                        "message": "some thing went wrong while creating posts",
+                        "success": False,
+                        "status": status.HTTP_400_BAD_REQUEST,
+                        "data": serialize_the_data.error,
+                    }
+                    return Response(
+                        data=error_from_serializer, status=status.HTTP_400_BAD_REQUEST
+                    )
+            else:
+                error = {
+                    "message": "title and content are required",
+                    "success": False,
+                    "status": status.HTTP_403_FORBIDDEN,
+                    "data": None,
+                }
+                return Response(data=error, status=status.HTTP_403_FORBIDDEN)
+        except Exception as e:
+            raise APIException("Internal server error occured while updating") from e
 
 
 @api_view(http_method_names=["PATCH"])
