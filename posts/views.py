@@ -69,9 +69,54 @@ def list_posts(request: Request):
 
 
 @api_view(http_method_names=["GET"])
-def post_detail(request: Request, post_id: int):
+def get_single_post(request: Request, post_id: int):
 
     post = get_object_or_404(Post, pk=post_id)
     serializer = PostSerializer(instance=post)
     res = {"message": "singlePost", "data": serializer.data}
     return Response(data=res, status=status.HTTP_200_OK)
+
+
+@api_view(http_method_names=["PATCH"])
+def update(request: Request, post_id: int):
+    post = get_object_or_404(Post, pk=post_id)
+    data = request.data
+    serializer = PostSerializer(instance=post, data=data)
+    if serializer.is_valid():
+        serializer.save()
+        res = {
+            "message": "Post updated successfully",
+            "success": True,
+            "status": status.HTTP_200_OK,
+            "data": serializer.data,
+        }
+        return Response(data=res, status=status.HTTP_200_OK)
+    else:
+        res = {
+            "message": "Post not found",
+            "success": True,
+            "status": 204,
+            "data": "",
+        }
+
+
+@api_view(http_method_names=["DELETE"])
+def delete(request: Request, post_id: int):
+    post = get_object_or_404(Post, pk=post_id)
+    try:
+        post.delete()
+        res = {
+            "message": "Post deleted successfully",
+            "success": True,
+            "status": status.HTTP_200_OK,
+            "data": "",
+        }
+        return Response(data=res, status=status.HTTP_200_OK)
+    except:
+        res = {
+            "message": "Post not found",
+            "success": True,
+            "status": 204,
+            "data": "",
+        }
+        return Response(data=res, status=status.HTTP_204_NO_CONTENT)
