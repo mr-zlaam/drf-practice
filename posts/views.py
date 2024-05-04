@@ -49,7 +49,6 @@ def list_posts(request: Request):
 
 @api_view(http_method_names=["GET"])
 def get_single_post(request: Request, post_id: int):
-
     post = get_object_or_404(Post, pk=post_id)
     serializer = PostSerializer(instance=post)
     res = {"message": "singlePost", "data": serializer.data}
