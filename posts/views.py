@@ -8,10 +8,9 @@ from posts.models import Post
 from posts.serializers import PostSerializer
 from django.shortcuts import get_object_or_404
 
-# Create your views here.;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-class Create_and_Get_Posts(APIView):
+# GET & POST method to get and post data.
+class Create_and_Get_Posts_View(APIView):
     serializer_class = PostSerializer
 
     # ***Get Request
@@ -60,42 +59,11 @@ class Create_and_Get_Posts(APIView):
             raise APIException("some thing went wrong while creating post") from e
 
 
-@api_view(http_method_names=["POST"])
-def homepage(request: Request):
-    if request.method == "POST":
-        data = request.data
-        serializers = PostSerializer(data=data)
-        if serializers.is_valid():
-            serializers.save()
-            res = {
-                "message": "post created successfully",
-                "success": True,
-                "status": 201,
-                "data": serializers.data,
-            }
-            return Response(data=res, status=status.HTTP_201_CREATED)
-
-        error = {
-            "message": "error while creating post",
-            "sucess": False,
-            "status": 500,
-            "error": serializers.errors,
-        }
-        return Response(data=error)
+# TODO: write this later
 
 
-@api_view(http_method_names=["GET"])
-def list_posts(request: Request):
-    posts = Post.objects.all()
-
-    serializers = PostSerializer(instance=posts, many=True)
-    response = {
-        "message": "All Posts are here",
-        "success": True,
-        "status": 200,
-        "data": serializers.data,
-    }
-    return Response(data=response, status=status.HTTP_200_OK)
+class Retrieve_Update_Delete_View:
+    pass
 
 
 @api_view(http_method_names=["GET"])
