@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from posts.models import Post
 from posts.serializers import PostSerializer
+from django.shortcuts import get_object_or_404
 
 # Create your views here.;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 posts = [
@@ -56,7 +57,7 @@ def list_posts(request: Request):
             "status": 500,
             "error": serializers.errors,
         }
-        return Response(data=error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(data=error)
     serializers = PostSerializer(instance=posts, many=True)
     response = {
         "message": "posts",
@@ -68,10 +69,9 @@ def list_posts(request: Request):
 
 
 @api_view(http_method_names=["GET"])
-def post_detail(request: Request, index: int):
-    if index > len(posts):
-        return Response(
-            data={"message": "Post not found"}, status=status.HTTP_404_NOT_FOUND
-        )
-    post = posts[index]
-    return Response(data=post, status=status.HTTP_200_OK)
+def post_detail(request: Request, post_id: int):
+
+    post = get_object_or_404(Post, pk=post_id)
+    serializer = PostSerializer(instance=post)
+    res = {"message": "singlePost", "data": serializer.data}
+    return Response(data=res, status=status.HTTP_200_OK)
