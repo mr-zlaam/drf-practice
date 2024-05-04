@@ -77,7 +77,7 @@ class Retrieve_Update_Delete_View(APIView):
     serializer_class = PostSerializer
 
     # Get Single Post
-    def get_single_post(
+    def get(
         self,
         request: Request,
         post_id: int,
