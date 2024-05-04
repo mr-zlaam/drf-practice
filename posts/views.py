@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
-
+from posts.models import Post
+from posts.serializers import PostSerializer
 
 # Create your views here.;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 posts = [
@@ -34,9 +35,36 @@ def homepage(request: Request):
     return HttpResponse("Hello world")
 
 
-@api_view(http_method_names=["GET"])
+@api_view(http_method_names=["GET", "POST"])
 def list_posts(request: Request):
-    return Response(data=posts, status=status.HTTP_200_OK)
+    posts = Post.objects.all()
+    if request.method == "POST":
+        data = request.data
+        serializers = PostSerializer(data=data)
+        if serializers.is_valid():
+            serializers.save()
+            res = {
+                "message": "post created successfully",
+                "success": True,
+                "status": 201,
+                "data": serializers.data,
+            }
+            return Response(data=res, status=status.HTTP_201_CREATED)
+        error = {
+            "message": "error while creating post",
+            "sucess": False,
+            "status": 500,
+            "error": serializers.errors,
+        }
+        return Response(data=error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    serializers = PostSerializer(instance=posts, many=True)
+    response = {
+        "message": "posts",
+        "success": True,
+        "status": 200,
+        "data": serializers.data,
+    }
+    return Response(data=response, status=status.HTTP_200_OK)
 
 
 @api_view(http_method_names=["GET"])
