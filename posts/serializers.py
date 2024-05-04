@@ -12,7 +12,8 @@ class PostSerializers(serializers.Serializer):
 
 
 class PostSerializer(ModelSerializer):
-    title = CharField(max_length=50)
+    title = CharField(max_length=50, min_length=2)
+    content = CharField(min_length=10)
 
     class Meta:
         model = Post
