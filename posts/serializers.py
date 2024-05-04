@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, CharField
 from posts.models import Post
 
 """
@@ -12,6 +12,7 @@ class PostSerializers(serializers.Serializer):
 
 
 class PostSerializer(ModelSerializer):
+    title = CharField(max_length=50)
 
     class Meta:
         model = Post

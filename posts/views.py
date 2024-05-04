@@ -8,37 +8,10 @@ from posts.serializers import PostSerializer
 from django.shortcuts import get_object_or_404
 
 # Create your views here.;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-posts = [
-    {"id": 1, "name": "John Doe", "age": 30},
-    {"id": 2, "name": "Jane Smith", "age": 25},
-    {"id": 3, "name": "Bob Johnson", "age": 40},
-    {"id": 4, "name": "Alice Brown", "age": 28},
-    {"id": 5, "name": "Mike Davis", "age": 35},
-    {"id": 6, "name": "Emily Taylor", "age": 22},
-    {"id": 7, "name": "Sarah Lee", "age": 32},
-    {"id": 8, "name": "Kevin White", "age": 45},
-    {"id": 9, "name": "Lisa Hall", "age": 38},
-    {"id": 10, "name": "Tom Harris", "age": 42},
-]
 
 
-@api_view(http_method_names=["POST", "GET"])
+@api_view(http_method_names=["POST"])
 def homepage(request: Request):
-    if request.method == "POST":
-        data = request.data
-        res = {
-            "message": "OK",
-            "success": True,
-            "status": status.HTTP_201_CREATED,
-            "data": data,
-        }
-        return Response(data=res, status=status.HTTP_201_CREATED)
-    return HttpResponse("Hello world")
-
-
-@api_view(http_method_names=["GET", "POST"])
-def list_posts(request: Request):
-    posts = Post.objects.all()
     if request.method == "POST":
         data = request.data
         serializers = PostSerializer(data=data)
@@ -58,9 +31,15 @@ def list_posts(request: Request):
             "error": serializers.errors,
         }
         return Response(data=error)
+
+
+@api_view(http_method_names=["GET"])
+def list_posts(request: Request):
+    posts = Post.objects.all()
+
     serializers = PostSerializer(instance=posts, many=True)
     response = {
-        "message": "posts",
+        "message": "All Posts are here",
         "success": True,
         "status": 200,
         "data": serializers.data,
