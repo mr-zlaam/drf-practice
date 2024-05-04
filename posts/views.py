@@ -1,13 +1,63 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, APIView
+from rest_framework.exceptions import APIException
 from django.http import HttpResponse
 from posts.models import Post
 from posts.serializers import PostSerializer
 from django.shortcuts import get_object_or_404
 
 # Create your views here.;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+class Create_and_Get_Posts(APIView):
+    serializer_class = PostSerializer
+
+    # ***Get Request
+    def get(self, request: Request, *args, **kwargs):
+        try:
+            posts = Post.objects.all()
+            serialize_the_data = self.serializer_class(instance=posts, many=True)
+            response_from_serializers = {
+                "message": "OK",
+                "success": True,
+                "status": status.HTTP_200_OK,
+                "data": serialize_the_data.data,
+            }
+            return Response(data=response_from_serializers, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            raise APIException("some thing went wrong while getting posts", e) from e
+
+    # ***Post Request
+    def post(self, request: Request, *args, **kwargs):
+        data_from_client = request.data
+        try:
+            serialize_the_data = self.serializer_class(data=data_from_client)
+            if serialize_the_data.is_valid():
+                serialize_the_data.save()
+                response_from_serializers = {
+                    "message": "post created successfully",
+                    "success": True,
+                    "status": status.HTTP_201_CREATED,
+                    "data": serialize_the_data.data,
+                }
+                return Response(
+                    data=response_from_serializers, status=status.HTTP_201_CREATED
+                )
+            error_from_serializer = {
+                "message": "some thing went wrong while creating posts",
+                "success": False,
+                "status": status.HTTP_400_BAD_REQUEST,
+                "data": serialize_the_data.error,
+            }
+            return Response(
+                data=error_from_serializer, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        except Exception as e:
+            raise APIException("some thing went wrong while creating post") from e
 
 
 @api_view(http_method_names=["POST"])
@@ -24,6 +74,7 @@ def homepage(request: Request):
                 "data": serializers.data,
             }
             return Response(data=res, status=status.HTTP_201_CREATED)
+
         error = {
             "message": "error while creating post",
             "sucess": False,
