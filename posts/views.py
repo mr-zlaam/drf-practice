@@ -53,7 +53,7 @@ class Create_and_Get_Posts_View(APIView):
                     "message": "some thing went wrong while creating posts",
                     "success": False,
                     "status": status.HTTP_400_BAD_REQUEST,
-                    "data": serialize_the_data.error,
+                    "data": serialize_the_data.errors,
                 }
                 return Response(
                     data=error_from_serializer, status=status.HTTP_400_BAD_REQUEST
@@ -97,13 +97,15 @@ class Retrieve_Update_Delete_View(APIView):
                 data=response_after_serialization, status=status.HTTP_200_OK
             )
         except Exception as e:
-            raise APIException("Internal server error occurred!") from e
+            raise APIException(
+                "Internal server error occurred while getting the post"
+            ) from e
 
     # Update Post
     def patch(self, request: Request, post_id: int):
+        data_from_client_to_update = request.data
         try:
             query_post_to_update = get_object_or_404(Post, pk=post_id)
-            data_from_client_to_update = request.data
             if (
                 data_from_client_to_update.get("title")
                 and data_from_client_to_update.get("content") is not None
@@ -125,10 +127,10 @@ class Retrieve_Update_Delete_View(APIView):
                     )
                 else:
                     error_from_serializer = {
-                        "message": "some thing went wrong while creating posts",
+                        "message": "some thing went wrong while updating post",
                         "success": False,
                         "status": status.HTTP_400_BAD_REQUEST,
-                        "data": serialize_the_data.error,
+                        "data": serialize_the_data.errors,
                     }
                     return Response(
                         data=error_from_serializer, status=status.HTTP_400_BAD_REQUEST
@@ -144,47 +146,22 @@ class Retrieve_Update_Delete_View(APIView):
         except Exception as e:
             raise APIException("Internal server error occured while updating") from e
 
-
-@api_view(http_method_names=["PATCH"])
-def update(request: Request, post_id: int):
-    post = get_object_or_404(Post, pk=post_id)
-    data = request.data
-    serializer = PostSerializer(instance=post, data=data)
-    if serializer.is_valid():
-        serializer.save()
-        res = {
-            "message": "Post updated successfully",
-            "success": True,
-            "status": status.HTTP_200_OK,
-            "data": serializer.data,
-        }
-        return Response(data=res, status=status.HTTP_200_OK)
-    else:
-        res = {
-            "message": "Post not found",
-            "success": True,
-            "status": 204,
-            "data": "",
-        }
-
-
-@api_view(http_method_names=["DELETE"])
-def delete(request: Request, post_id: int):
-    post = get_object_or_404(Post, pk=post_id)
-    try:
-        post.delete()
-        res = {
-            "message": "Post deleted successfully",
-            "success": True,
-            "status": status.HTTP_200_OK,
-            "data": "",
-        }
-        return Response(data=res, status=status.HTTP_200_OK)
-    except:
-        res = {
-            "message": "Post not found",
-            "success": True,
-            "status": 204,
-            "data": "",
-        }
-        return Response(data=res, status=status.HTTP_204_NO_CONTENT)
+    # Delete Post
+    def delete(self, request: Request, post_id: int):
+        query_post_to_delete = get_object_or_404(Post, pk=post_id)
+        try:
+            query_post_to_delete.delete()
+            response_after_querying_post_for_delete = {
+                "message": "Post deleted successfully",
+                "success": True,
+                "status": status.HTTP_204_NO_CONTENT,
+                "data": "",
+            }
+            return Response(
+                data=response_after_querying_post_for_delete,
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        except Exception as e:
+            raise APIException(
+                "Internal server error occurred while deleting the post!!!"
+            )
