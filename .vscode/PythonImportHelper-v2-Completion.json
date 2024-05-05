@@ -337,7 +337,7 @@
         "kind": 6,
         "importPath": "accounts.models",
         "description": "accounts.models",
-        "peekOfCode": "class User(AbstractUser):\n    email = models.EmailField(unique=True)\n    username = None",
+        "peekOfCode": "class User(AbstractUser):\n    email = models.EmailField(unique=True, max_length=30)\n    username = models.CharField(unique=True, max_length=10)\n    date_of_birth = models.DateField(auto_now_add=False)",
         "detail": "accounts.models",
         "documentation": {}
     },
