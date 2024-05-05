@@ -418,7 +418,7 @@
         "kind": 5,
         "importPath": "core.urls",
         "description": "core.urls",
-        "peekOfCode": "urlpatterns = [path(\"admin/\", admin.site.urls), path(\"posts/\", include(\"posts.urls\"))]",
+        "peekOfCode": "urlpatterns = [path(\"admin/\", admin.site.urls), path(\"/\", include(\"posts.urls\"))]",
         "detail": "core.urls",
         "documentation": {}
     },
