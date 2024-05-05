@@ -57,6 +57,14 @@
         "documentation": {}
     },
     {
+        "label": "include",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
         "label": "path",
         "importPath": "django.urls",
         "description": "django.urls",
@@ -171,15 +179,15 @@
         "documentation": {}
     },
     {
-        "label": "Create_and_Get_Posts_View",
-        "importPath": "posts.views",
-        "description": "posts.views",
+        "label": "DefaultRouter",
+        "importPath": "rest_framework.routers",
+        "description": "rest_framework.routers",
         "isExtraImport": true,
-        "detail": "posts.views",
+        "detail": "rest_framework.routers",
         "documentation": {}
     },
     {
-        "label": "Retrieve_Update_Delete_View",
+        "label": "PostViewSet",
         "importPath": "posts.views",
         "description": "posts.views",
         "isExtraImport": true,
@@ -550,11 +558,20 @@
         "documentation": {}
     },
     {
+        "label": "router",
+        "kind": 5,
+        "importPath": "posts.urls",
+        "description": "posts.urls",
+        "peekOfCode": "router = DefaultRouter()\nrouter.register(\"hero/\", PostViewSet, basename=\"posts\")\nurlpatterns = [\n    path(\"posts/\", include(router.urls)),\n]",
+        "detail": "posts.urls",
+        "documentation": {}
+    },
+    {
         "label": "urlpatterns",
         "kind": 5,
         "importPath": "posts.urls",
         "description": "posts.urls",
-        "peekOfCode": "urlpatterns = [\n    path(\n        \"create_and_get_post/\", Create_and_Get_Posts_View.as_view(), name=\"post_&_get\"\n    ),\n    path(\n        \"retrieve_update_delete/<int:pk>\",\n        Retrieve_Update_Delete_View.as_view(),\n        name=\"get_&_patch_&_delete\",\n    ),\n]",
+        "peekOfCode": "urlpatterns = [\n    path(\"posts/\", include(router.urls)),\n]",
         "detail": "posts.urls",
         "documentation": {}
     },
