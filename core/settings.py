@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # native
     "posts",
+    "accounts"
     # 3rd party
     "rest_framework",
 ]
